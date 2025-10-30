@@ -1,0 +1,23 @@
+CREATE OR REPLACE PROCEDURE TELCO.DATAMART.SP_CHURN_PREDICTION()
+RETURNS VARCHAR
+LANGUAGE SQL
+EXECUTE AS OWNER
+AS '
+BEGIN
+    CALL TELCO.DATAMART.SP_CUSTOMER_STATUS_PREDICTION();
+    CREATE OR REPLACE TABLE TELCO.DATAMART.TB_F_CHURN_PREDICTION AS
+    SELECT DISTINCT
+        a.CUSTOMER_ID,
+        a.PREDICTION_RESULTS,
+        CASE 
+            WHEN a.PREDICTION_RESULTS = ''No'' THEN NULL
+            ELSE SNOWFLAKE.CORTEX.COMPLETE(
+                ''snowflake-arctic'',
+                CONCAT(''You are a churn prediction analyst...'')
+            )
+        END AS CHURN_REASON,
+        a.PREDICTION_DATE
+    FROM TELCO.DATAMART.TB_R_CHURN_PREDICTION a;
+    RETURN ''✅ Churn prediction table created successfully.'';
+END;
+';
