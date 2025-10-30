@@ -1,0 +1,5 @@
+CREATE OR REPLACE TASK TELCO.JOB.TK_CHURN_STEP1_SYNC_R
+	warehouse=COMPUTE_WH
+	schedule='USING CRON 0 8 * * MON-FRI Asia/Jakarta'
+	COMMENT='Churn S1: sinkron data churn dari R → RAW'
+	AS CALL TELCO.RAW.SP_SYNC_R_CHURN();
